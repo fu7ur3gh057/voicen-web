@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework import generics, status, views
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework import filters, generics, permissions, status
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -82,16 +82,6 @@ class UpdatePasswordAPIView(generics.UpdateAPIView):
         return Response('success', status=status.HTTP_200_OK)
 
 
-class ResetPasswordRequestAPIView(views.APIView):
-    def get(self, request):
-        pass
-
-
-class SetNewPasswordAPIView(views.APIView):
-    def post(self):
-        pass
-
-
 class LogoutAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -105,7 +95,22 @@ class LogoutAPIView(views.APIView):
             return Response(f'{ex}', status=status.HTTP_400_BAD_REQUEST)
 
 
+# TODO
+class ResetPasswordRequestAPIView(views.APIView):
+    def get(self, request):
+        pass
+
+
+# TODO
+class SetNewPasswordAPIView(views.APIView):
+    def post(self):
+        pass
+
+
+# TODO
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request: Request):
     pass
+
+# TODO

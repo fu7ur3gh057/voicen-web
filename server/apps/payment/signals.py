@@ -20,6 +20,13 @@ def create_wallet(sender, instance, created, **kwargs):
         wallet.save()
 
 
+@receiver(post_save, sender=Wallet)
+def create_init_subscription(sender, instance, created, **kwargs):
+    if created:
+        subscription = Subscription.objects.create(wallet=instance, type=4)
+        subscription.save()
+
+
 @receiver(post_save, sender=Synthesis)
 def create_tts_operation(sender, instance, created, **kwargs):
     if created:
@@ -44,8 +51,9 @@ def create_transaction_operation(sender, instance, created, **kwargs):
         operation = Operation.objects.create(wallet=instance.wallet, amount=instance.amount, type=instance.type)
         operation.save()
 
-# @receiver(post_save, sender=Subscription)
-# def create_subscription_operation(sender, instance, created, **kwargs):
-#     if created:
-#         operation = Operation.objects.create(user=instance.user, amount=15, type=2)
-#         operation.save()
+
+@receiver(post_save, sender=Subscription)
+def create_subscription_operation(sender, instance, created, **kwargs):
+    if created and instance.type != 4:
+        operation = Operation.objects.create(wallet=instance.wallet, amount=15, type=2)
+        operation.save()

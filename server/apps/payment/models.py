@@ -36,9 +36,10 @@ class Subscription(TimeStampedUUIDModel):
         (1, 'Active'),
         (2, 'Expired'),
         (3, 'Canceled'),
+        (4, 'None')
     )
-    wallet = models.OneToOneField(Wallet, related_name="subscription", on_delete=models.CASCADE)
-    type = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    wallet = models.ForeignKey(Wallet, related_name="subscription_list", on_delete=models.CASCADE)
+    type = models.IntegerField(choices=STATUS_CHOICES, default=4)
 
 
 # Transaction For Updating Balance

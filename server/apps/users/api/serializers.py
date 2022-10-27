@@ -58,12 +58,12 @@ class UpdatePasswordSerializer(serializers.ModelSerializer):
     def validate_old_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError(
-                _('Your old password was entered incorrectly. Please enter it again.')
-            )
+            raise serializers.ValidationError(_('Your old password was entered incorrectly. Please enter it again.'))
         return value
 
     def validate(self, attrs):
+        if attrs.get('old_password') == attrs.get('new_password'):
+            raise serializers.ValidationError(_('No difference between old and new passwords'))
         if attrs.get('new_password') != attrs.get('retype_password'):
             raise serializers.ValidationError({'new_password2': _("The two password fields didn't match.")})
         return attrs

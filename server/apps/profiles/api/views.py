@@ -29,14 +29,11 @@ class UpdateProfileAPIView(APIView):
     renderer_classes = [ProfileJSONRenderer]
     serializer_class = UpdateProfileSerializer
 
-    def put(self, request, username):
+    def put(self, request):
         try:
             pass
         except Profile.DoesNotExist:
             raise ProfileNotFound
-        user_name = request.user.username
-        if user_name != username:
-            raise NotYourProfile
         data = request.data
         serializer = UpdateProfileSerializer(instance=request.user.profile, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
