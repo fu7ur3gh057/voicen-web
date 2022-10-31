@@ -1,25 +1,20 @@
-from django.contrib.auth import get_user_model
-from django.shortcuts import render
-from rest_framework import generics, status, views
+from rest_framework import views
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework import filters, generics, permissions, status
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import generics, permissions, status
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.authtoken.models import Token
 
 from apps.users.api.serializers import RegisterSerializer, EmailVerificationSerializer, MyTokenObtainPairSerializer, \
     UpdatePasswordSerializer
 from apps.users.models import User
 from apps.users.tasks import activate_user
 from rest_framework.decorators import api_view, permission_classes
-
-from storage.ftp import FTPStorage
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

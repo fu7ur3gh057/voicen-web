@@ -57,8 +57,8 @@ class Operation(TimeStampedUUIDModel):
     OPERATION_CHOICES = (
         (1, 'Pay As You Go'),
         (2, 'Subscription'),
-        (3, 'Text To Speech'),
-        (4, 'Speech To Text'),
+        (3, 'Synthesis'),
+        (4, 'Transcribe'),
         (5, 'Transaction'),
     )
     wallet = models.ForeignKey(Wallet, related_name="operation_list", on_delete=models.CASCADE)

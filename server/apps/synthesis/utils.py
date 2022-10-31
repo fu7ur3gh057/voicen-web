@@ -1,6 +1,10 @@
 import re
 from decimal import Decimal
 
+allowed_extensions = ['mp3', 'midi', 'mid', 'cda', 'aif', 'ogg', 'wav', 'mpa', 'wpl', 'opus',
+                      '3g2', '3gp', 'avi', 'flv', 'h264', 'm4v', 'm4a', 'mkv', 'mov', 'mp4',
+                      'mpg', 'mpeg', 'mpeg4', 'amr', 'rm', 'swf', 'vob', 'wmv', 'webm', 'aac']
+
 
 def remove_text_inside_brackets(text):
     result = re.sub("[\{\(\[].*?[\)\}\]]", "", text, flags=re.S)
@@ -14,14 +18,5 @@ def get_synthesis_price(char_size: int):
     return price
 
 
-
-
-def get_filename(text):
-    if len(text) > 40:
-        return f'{text[:39]}'
-    else:
-        return f'{text}'
-
-
-def get_filepath(filename, user_pkid):
-    return f"media/tts/user_{user_pkid}/{filename}.wav"
+def synthesis_ftp_path():
+    pass

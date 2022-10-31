@@ -22,11 +22,10 @@ class Synthesis(TimeStampedUUIDModel):
     text = models.TextField(blank=True, null=True)
     filename = models.CharField(max_length=256, blank=True, null=True)
     result_path = models.CharField(max_length=256, null=True)
-    voice = models.IntegerField(choices=voicen_constants.VOICE_CHOICES)
+    voice_id = models.IntegerField(choices=voicen_constants.VOICE_CHOICES)
     num_characters = models.BigIntegerField(blank=True, null=True)
     lang = models.CharField(verbose_name=_("Language"), max_length=3, blank=False, choices=LANGUAGE_CHOICES)
     status = models.IntegerField(default=0)
-    created = models.DateTimeField(auto_now_add=True)
     shared = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
 

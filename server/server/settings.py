@@ -30,10 +30,18 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 YOUTUBE_API_KEY = env('YOUTUBE_API_KEY')
 DEBUG = True
 
-# DEFAULT_FILE_STORAGE = 'storages.backends.ftp.FTPStorage'
+FILE_UPLOAD_PERMISSIONS = 0o644
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10000000
+# DEFAULT_FILE_STORAGE = 'storage.ftp.FTPStorage'
+
 FTP_STORAGE_LOCATION = env('FTP_STORAGE_LOCATION')
 # path to certificate to login ftps server
 PATH_TO_CA_CERT_CHAIN = os.path.join(BASE_DIR, 'server/ca-chain.cert.pem')
+
+FILE_UPLOAD_HANDLERS = [
+    # 'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
 
 ALLOWED_HOSTS = ['*']
 
@@ -73,7 +81,9 @@ LOCAL_APPS = [
     "apps.transcribe",
     "apps.payment",
     "apps.common",
+    # ASGI apps
     "apps.chat",
+    "apps.notification",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -161,6 +171,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIR = []
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'

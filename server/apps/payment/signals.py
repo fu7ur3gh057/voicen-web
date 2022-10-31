@@ -28,11 +28,11 @@ def create_init_subscription(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Synthesis)
-def create_tts_operation(sender, instance, created, **kwargs):
+def create_synthesis_operation(sender, instance, created, **kwargs):
     if created:
         char_size = remove_text_inside_brackets(instance.text)
         amount = get_synthesis_price(char_size=char_size)
-        operation = Operation.objects.create(user=instance.user, amount=amount, type=3)
+        operation = Operation.objects.create(wallet=instance.profile.wallet, amount=amount, type=3)
         operation.save()
 
 
@@ -40,8 +40,8 @@ def create_tts_operation(sender, instance, created, **kwargs):
 def create_transcribe_operation(sender, instance, created, **kwargs):
     if created:
         duration = instance.duration
-        amount = get_transcribe_price(duration=duration)
-        operation = Operation.objects.create(user=instance.user, amount=amount, type=4)
+        amount = instance.price
+        operation = Operation.objects.create(wallet=instance.profile.wallet, amount=amount, type=4)
         operation.save()
 
 

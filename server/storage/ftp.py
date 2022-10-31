@@ -22,13 +22,14 @@ class FTPStorage(Storage):
     def __init__(self, location=None, base_url=None):
         location = location or settings.FTP_STORAGE_LOCATION
         if location is None:
-            exec_txt = 'You must set a location as param or at settings.FTP_STORAGE_LOCATION'
-            raise ImproperlyConfigured(exec_txt)
+            raise ImproperlyConfigured("You must set a location at "
+                                       "instanciation or at "
+                                       " settings.FTP_STORAGE_LOCATION'.")
         self.location = location
         base_url = base_url or settings.MEDIA_URL
-        self._config = self._decode_location(location=location)
-        self.base_url = base_url
-        self._connection: ftplib.FTP_TLS | None = None
+        self._config = self._decode_location(location)
+        self._base_url = base_url
+        self._connection = None
 
     # DECODING LOCATION URL
     def _decode_location(self, location):
@@ -46,6 +47,7 @@ class FTPStorage(Storage):
         config['host'] = splitted_url.hostname
         config['user'] = splitted_url.username
         config['passwd'] = splitted_url.password
+        config['port'] = int(splitted_url.port or "21")
         return config
 
     # CONNECT
@@ -68,6 +70,7 @@ class FTPStorage(Storage):
                 context.verify_mode = ssl.CERT_REQUIRED
                 ftp = ftplib.FTP_TLS(host=host, user=user, passwd=passwd, context=context)
                 ftp.prot_p()
+                l = ftp.nlst()
                 self._connection = ftp
                 return
             except ftplib.all_errors:
@@ -84,10 +87,11 @@ class FTPStorage(Storage):
     # MAKE DIRECTORY
     def _mkremdirs(self, path):
         pwd = self._connection.pwd()
+        self._connection.cwd('fuad')
         path_splitted = path.split('/')
         for path_part in path_splitted:
             try:
-                self._connection.cwd(path_part)
+                self._connection.cwd(f'{path_part}')
             except ftplib.all_errors:
                 try:
                     self._connection.mkd(path_part)
@@ -101,9 +105,11 @@ class FTPStorage(Storage):
 
     # PUT FILE
     def _put_file(self, name, content):
+        name = f'fuad/{name}'
         try:
             self._mkremdirs(os.path.dirname(name))
             pwd = self._connection.pwd()
+            f_s = os.path.dirname(name)
             self._connection.cwd(os.path.dirname(name))
             self._connection.storbinary(f'STOR {os.path.basename(name)}', content.file, content.DEFAULT_CHUNK_SIZE)
             self._connection.cwd(pwd)
