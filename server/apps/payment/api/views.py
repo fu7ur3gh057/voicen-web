@@ -16,6 +16,9 @@ from apps.profiles.models import Profile
 logger = logging.getLogger(__name__)
 
 
+# ALL METHODS ARE AUTHENTICATED
+
+# GET WALLET BY USER
 class GetWalletAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     # renderer_classes = [WalletJSONRenderer]
@@ -29,6 +32,7 @@ class GetWalletAPIView(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+# MAKE TRANSACTION
 class MakeTransactionAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -45,6 +49,7 @@ class MakeTransactionAPIView(APIView):
             return Response({"error": "Amount should be more than 1$"}, status=status.HTTP_402_PAYMENT_REQUIRED)
 
 
+# GET LIST OF TRANSACTIONS
 class TransactionListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TransactionSerializer
@@ -57,6 +62,7 @@ class TransactionListAPIView(generics.ListAPIView):
         return queryset
 
 
+# GET LIST OF OPERATIONS
 class OperationListAPIView(generics.ListAPIView):
     queryset = Operation.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -69,6 +75,7 @@ class OperationListAPIView(generics.ListAPIView):
         return queryset
 
 
+# GET LIST OF SUBSCRIPTION
 class SubscriptionListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SubscriptionSerializer
@@ -81,6 +88,7 @@ class SubscriptionListAPIView(generics.ListAPIView):
         return queryset
 
 
+# MAKE SUBSCRIPTION
 class SubscribeAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -99,6 +107,7 @@ class SubscribeAPIView(APIView):
         return Response("Subscription is Active", status=status.HTTP_201_CREATED)
 
 
+# MAKE UNSUBSCRIBE
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated])
 def unsubscribe(request: Request):

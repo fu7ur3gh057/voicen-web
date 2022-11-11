@@ -17,10 +17,12 @@ from apps.users.tasks import activate_user
 from rest_framework.decorators import api_view, permission_classes
 
 
+# LOGIN
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
+# REGISTRATION
 class RegisterAPIView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -46,6 +48,7 @@ class RegisterAPIView(generics.GenericAPIView):
         return Response(user_data, status.HTTP_201_CREATED)
 
 
+# VERIFICATION
 class VerifyEmailAPIView(views.APIView):
     serializer_class = EmailVerificationSerializer
 
@@ -64,6 +67,7 @@ class VerifyEmailAPIView(views.APIView):
             return Response({'error': 'invalid token'}, status.HTTP_400_BAD_REQUEST)
 
 
+# UPDATE PASSWORD
 class UpdatePasswordAPIView(generics.UpdateAPIView):
     serializer_class = UpdatePasswordSerializer
 
@@ -77,6 +81,7 @@ class UpdatePasswordAPIView(generics.UpdateAPIView):
         return Response('success', status=status.HTTP_200_OK)
 
 
+# LOGOUT
 class LogoutAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -90,19 +95,19 @@ class LogoutAPIView(views.APIView):
             return Response(f'{ex}', status=status.HTTP_400_BAD_REQUEST)
 
 
-# TODO
+# RESET PASSWORD REQUEST TODO
 class ResetPasswordRequestAPIView(views.APIView):
     def get(self, request):
         pass
 
 
-# TODO
+# SET NEW PASSWORD TODO
 class SetNewPasswordAPIView(views.APIView):
     def post(self):
         pass
 
 
-# TODO
+# DELETE USER TODO
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request: Request):

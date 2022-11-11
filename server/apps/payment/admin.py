@@ -4,8 +4,8 @@ from .models import Operation, Transaction, Subscription, Wallet
 
 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ['id', 'pkid', 'profile', "created_at"]
-    list_display_links = ['id', 'pkid', "profile"]
+    list_display = ['id', 'pkid', 'profile', 'credit', "created_at"]
+    list_display_links = ['id', 'pkid',"credit", "profile"]
 
 
 class OperationAdmin(admin.ModelAdmin):

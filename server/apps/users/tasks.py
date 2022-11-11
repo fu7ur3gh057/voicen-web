@@ -7,6 +7,7 @@ import time
 logger = get_task_logger(__name__)
 
 
+# SENDING MESSAGE WITH TOKEN TO USER EMAIL
 @shared_task(name='activate_user')
 def activate_user(data):
     logger.info('EMAIL START TO SEND')

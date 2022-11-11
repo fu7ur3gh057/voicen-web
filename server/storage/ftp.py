@@ -17,6 +17,7 @@ class FTPStorageException(Exception):
     pass
 
 
+# BASE FTP STORAGE
 @deconstructible
 class FTPStorage(Storage):
     def __init__(self, location=None, base_url=None):
@@ -199,6 +200,7 @@ class FTPStorage(Storage):
             raise
 
     def delete(self, name):
+        name = f'fuad/{name}'
         if not self.exists(name):
             return
         self._start_connection()

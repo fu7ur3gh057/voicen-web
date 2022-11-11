@@ -13,13 +13,16 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 SIGNING_KEY = env('SIGNING_KEY')
 
+# CELERY
 BROKER_URL = env('BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/London'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
+# EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_USE_TLS = True
@@ -32,8 +35,8 @@ DEBUG = True
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10000000
-# DEFAULT_FILE_STORAGE = 'storage.ftp.FTPStorage'
 
+# DEFAULT_FILE_STORAGE = 'storage.ftp.FTPStorage'
 FTP_STORAGE_LOCATION = env('FTP_STORAGE_LOCATION')
 # path to certificate to login ftps server
 PATH_TO_CA_CERT_CHAIN = os.path.join(BASE_DIR, 'server/ca-chain.cert.pem')
@@ -68,6 +71,8 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "rest_framework_simplejwt",
     'rest_framework_simplejwt.token_blacklist',
+    'django_celery_beat',
+    'django_celery_results',
     'parler',
     'corsheaders',
     'channels',
@@ -130,6 +135,16 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# CACHE
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379',
+    }
+}
+
+CELERY_CACHE_BACKEND = 'default'
 
 # DATABASE
 DATABASES = {

@@ -11,7 +11,10 @@ from apps.profiles.exceptions import ProfileNotFound, NotYourProfile
 from apps.profiles.models import Profile
 from apps.profiles.renderers import ProfileJSONRenderer
 
+# ALL METHODS ARE AUTHENTICATED
 
+
+# GET PROFILE
 class GetProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [ProfileJSONRenderer]
@@ -23,7 +26,7 @@ class GetProfileAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# UPDATE BY USERNAME
+# UPDATE PROFILE
 class UpdateProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [ProfileJSONRenderer]

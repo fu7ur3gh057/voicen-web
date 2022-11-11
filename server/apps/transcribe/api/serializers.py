@@ -13,6 +13,7 @@ class TranscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transcribe
         fields = [
+            'id',
             'file_name',
             'youtube_url',
             'full_text',
@@ -31,8 +32,21 @@ class TranscribeDetailSerializer(serializers.ModelSerializer):
         return get_transcribe_status(status=obj.status)
 
     class Meta:
-        exclude = ['profile']
-        fields = ['__all__']
+        model = Transcribe
+        # exclude = ['profile']
+        fields = [
+            'id',
+            'file_name',
+            'ftp_path',
+            'youtube_url',
+            'full_text',
+            'edited_json',
+            'duration',
+            'price',
+            'lang',
+            'status',
+            'created_at',
+        ]
 
 
 class CreateTranscribeSerializer(serializers.ModelSerializer):

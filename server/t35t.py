@@ -3,6 +3,8 @@ from decimal import Decimal
 import unicodedata
 import string
 
+from apps.transcribe.utils import get_transcribe_price
+
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 char_limit = 250
 

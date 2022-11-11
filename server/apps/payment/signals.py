@@ -13,6 +13,7 @@ from apps.transcribe.utils import get_transcribe_price
 logger = logging.getLogger(__name__)
 
 
+# CREATE WALLET AFTER PROFILE CREATING
 @receiver(post_save, sender=Profile)
 def create_wallet(sender, instance, created, **kwargs):
     if created:
@@ -20,6 +21,7 @@ def create_wallet(sender, instance, created, **kwargs):
         wallet.save()
 
 
+# CREATE INIT SUBSCRIPTION WITH TYPE NONE
 @receiver(post_save, sender=Wallet)
 def create_init_subscription(sender, instance, created, **kwargs):
     if created:
@@ -27,6 +29,7 @@ def create_init_subscription(sender, instance, created, **kwargs):
         subscription.save()
 
 
+# CREATE OPERATION TYPE - SYNTHESIS
 @receiver(post_save, sender=Synthesis)
 def create_synthesis_operation(sender, instance, created, **kwargs):
     if created:
@@ -36,6 +39,7 @@ def create_synthesis_operation(sender, instance, created, **kwargs):
         operation.save()
 
 
+# CREATE OPERATION TYPE - TRANSCRIBE
 @receiver(post_save, sender=Transcribe)
 def create_transcribe_operation(sender, instance, created, **kwargs):
     if created:
@@ -45,6 +49,7 @@ def create_transcribe_operation(sender, instance, created, **kwargs):
         operation.save()
 
 
+# CREATE OPERATION TYPE - TRANSACTION
 @receiver(post_save, sender=Transaction)
 def create_transaction_operation(sender, instance, created, **kwargs):
     if created:
@@ -52,6 +57,7 @@ def create_transaction_operation(sender, instance, created, **kwargs):
         operation.save()
 
 
+# CREATE OPERATION TYPE - SUBSCRIPTION
 @receiver(post_save, sender=Subscription)
 def create_subscription_operation(sender, instance, created, **kwargs):
     if created and instance.type != 4:
