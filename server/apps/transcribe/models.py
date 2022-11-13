@@ -22,10 +22,10 @@ class Transcribe(TimeStampedUUIDModel):
     file = models.FileField(max_length=300, upload_to=transcribe_file_path, null=True,
                             validators=[FileExtensionValidator(allowed_extensions=allowed_extensions)])
     file_name = models.CharField(verbose_name=_("File Name"), max_length=256, null=True)
-    duration = models.DecimalField(max_digits=6, decimal_places=3, default=0.00)
+    duration = models.DecimalField(verbose_name=_("Duration in seconds"), max_digits=6, decimal_places=3, default=0.00)
     price = models.DecimalField(max_digits=6, decimal_places=3, default=1.00)
     full_text = models.TextField(verbose_name=_("Full Text"), default='')
-    edited_json = models.JSONField(null=True)
+    edited_json = models.JSONField(verbose_name=_("Edited JSON"), null=True, blank=True, )
     # result_json = jsonfield.JSONField(verbose_name=_("Result JSON"), null=True)
     status = models.IntegerField(default=0)
     progress = models.DecimalField(max_digits=15, decimal_places=6, default=0.00)

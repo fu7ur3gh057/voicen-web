@@ -3,24 +3,12 @@ from decimal import Decimal
 import unicodedata
 import string
 
-from apps.transcribe.utils import get_transcribe_price
+from apps.transcribe.utils import get_transcribe_price, download_yt_video_as_mp3, get_youtube_video_info
 
-valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-char_limit = 250
+# download_yt_video_as_mp3(video_url='https://www.youtube.com/watch?v=hS5CfP8n_js&ab_channel=Mr.Monk',
+#                          user_id='d5f419d0-f4c1-4592-b7c6-9e22f8fabb78')
 
-
-def clean_filename(filename, whitelist=valid_filename_chars, replace=' '):
-    # replace spaces
-    filename, extension = os.path.splitext(filename)
-    for r in replace:
-        filename = filename.replace(r, '_')
-    # keep only valid ascii chars
-    cleaned_filename = unicodedata.normalize(
-        'NFKD', filename).encode('ASCII', 'ignore').decode()
-    # keep only whitelisted chars
-    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
-    return cleaned_filename[:char_limit] + extension
-
-
-file_name = 'salam_fuad necəsen.mp3'
-print(clean_filename(filename=file_name))
+info = get_youtube_video_info('https://www.youtube.com/watch?v=hS5CfP8n_js&ab_channel=Mr.Monk')
+path = download_yt_video_as_mp3(video_info=info, user_id='d5f419d0-f4c1-4592-b7c6-9e22f8fabb78')
+file = open(path, 'rb')
+print(file)

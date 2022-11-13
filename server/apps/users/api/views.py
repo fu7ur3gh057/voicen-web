@@ -112,5 +112,3 @@ class SetNewPasswordAPIView(views.APIView):
 @permission_classes([permissions.IsAuthenticated])
 def delete_user(request: Request):
     pass
-
-# TODO

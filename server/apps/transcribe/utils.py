@@ -4,6 +4,8 @@ import unicodedata
 import string
 from urllib.parse import urlparse
 
+import youtube_dl
+
 from server import settings
 
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -85,6 +87,25 @@ def get_youtube_api_url(yt_id: str, yt_api_key: str):
     return f'{base_url}?id={yt_id}&key={yt_api_key}&{params}'
 
 
+def get_youtube_video_info(video_url: str):
+    video_info = youtube_dl.YoutubeDL().extract_info(url=video_url, download=False)
+    return video_info
+
+
+def download_yt_video_as_mp3(video_info: dict, user_id: str):
+    video_title = f"{video_info['title']}"
+    file_name = f"{clean_filename(video_title)}.mp3"
+    file_path = os.path.join(settings.MEDIA_ROOT, f'transcribe/user_{user_id}/{file_name}')
+    options = {
+        'format': 'bestaudio/best',
+        'keepvideo': False,
+        'outtmpl': file_path,
+    }
+    with youtube_dl.YoutubeDL(options) as ydl:
+        ydl.download([video_info['webpage_url']])
+    return file_path
+
+
 # GET TRANSCRIBE STATUS
 def get_transcribe_status(status: int):
     if status == -1:
@@ -94,7 +115,7 @@ def get_transcribe_status(status: int):
     elif status == 1:
         return "processing"
     elif status == 2:
-        return "synthesizing"
+        return "transcribing"
     elif status == 3:
         return "ready"
     elif status == 4:

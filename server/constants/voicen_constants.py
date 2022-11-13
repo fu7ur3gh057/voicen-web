@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 
 START_CREDIT = 1.20  # dollar
 
-AVALIABLE_VOICE_IDS = ['325640', '325641', '325642',
+AVAILABLE_VOICE_IDS = ['325640', '325641', '325642',
                        '325643', '325644', '325645',
                        '325646', '325647', '325648']
 
@@ -29,6 +29,12 @@ VOICE_TUPLE = (
     (325644, 'tr', 'Sibel', _('female')),
     (325645, 'ru', 'Anna', _('female')),
 )
+
+AVAILABLE_SYNTHESIS_LANGS = [
+    'az',
+    'tr',
+    'ru',
+]
 
 VOICE_LANG_VOICE_DICT = {
     'az': ['Aytac', 'Aynur', 'Ramin', 'Kamil'],
@@ -73,5 +79,5 @@ VOICE_PITCH_TEMPO = {
 }
 
 allowed_extensions = ['mp3', 'midi', 'mid', 'cda', 'aif', 'ogg', 'wav', 'mpa', 'wpl', 'opus',
-                       '3g2', '3gp', 'avi', 'flv', 'h264', 'm4v', 'm4a', 'mkv', 'mov', 'mp4',
-                       'mpg', 'mpeg', 'mpeg4', 'amr', 'rm', 'swf', 'vob', 'wmv', 'webm', 'aac']
+                      '3g2', '3gp', 'avi', 'flv', 'h264', 'm4v', 'm4a', 'mkv', 'mov', 'mp4',
+                      'mpg', 'mpeg', 'mpeg4', 'amr', 'rm', 'swf', 'vob', 'wmv', 'webm', 'aac']

@@ -20,12 +20,14 @@ class Synthesis(TimeStampedUUIDModel):
 
     profile = models.ForeignKey(Profile, related_name="synthesis_jobs", on_delete=models.CASCADE)
     text = models.TextField(blank=True, null=True)
-    filename = models.CharField(max_length=256, blank=True, null=True)
-    result_path = models.CharField(max_length=256, null=True)
+    file_name = models.CharField(max_length=256, blank=True, null=True)
+    ftp_path = models.CharField(max_length=256, null=True)
     voice_id = models.IntegerField(choices=voicen_constants.VOICE_CHOICES)
-    num_characters = models.BigIntegerField(blank=True, null=True)
+    char_count = models.BigIntegerField(blank=True, null=True)
     lang = models.CharField(verbose_name=_("Language"), max_length=3, blank=False, choices=LANGUAGE_CHOICES)
     status = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=6, decimal_places=3, default=1.00)
+    error_code = models.IntegerField(verbose_name=_("Error Code"), default=0)
     shared = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
 

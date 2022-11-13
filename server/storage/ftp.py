@@ -105,14 +105,21 @@ class FTPStorage(Storage):
         return
 
     # PUT FILE
-    def _put_file(self, name, content):
+    def _put_file(self, name, content, is_file):
+        DEFAULT_CHUNK_SIZE = 64 * 2 ** 10
         name = f'fuad/{name}'
         try:
+            # for FileField
+            if is_file:
+                file = content.file
+            # for Media Root File
+            else:
+                file = content
             self._mkremdirs(os.path.dirname(name))
             pwd = self._connection.pwd()
             f_s = os.path.dirname(name)
             self._connection.cwd(os.path.dirname(name))
-            self._connection.storbinary(f'STOR {os.path.basename(name)}', content.file, content.DEFAULT_CHUNK_SIZE)
+            self._connection.storbinary(f'STOR {os.path.basename(name)}', file, DEFAULT_CHUNK_SIZE)
             self._connection.cwd(pwd)
         except ftplib.all_errors:
             raise FTPStorageException('Error writing file %s' % name)
@@ -134,10 +141,21 @@ class FTPStorage(Storage):
         except ftplib.all_errors:
             raise FTPStorageException('Error reading file %s' % name)
 
-    def _save(self, name, content):
-        content.open()
+    # def _save_media_file(self, name, file_path):
+    #     content = open(file_path, 'rb')
+    #     DEFAULT_CHUNK_SIZE = 64 * 2 ** 10
+    #     self._start_connection()
+    #     self._put_file(name=name, content=content, default_chunk_size=DEFAULT_CHUNK_SIZE)
+    #     content.close()
+    #     return name
+
+    def _save(self, name, content, is_file=True):
+        if is_file:
+            content.open()
+        else:
+            content = open(content, 'rb')
         self._start_connection()
-        self._put_file(name, content)
+        self._put_file(name, content, is_file=is_file)
         content.close()
         return name
 

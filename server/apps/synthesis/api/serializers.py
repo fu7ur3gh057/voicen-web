@@ -3,42 +3,52 @@ from rest_framework import serializers
 
 from apps.profiles.models import Profile
 from apps.synthesis.models import Synthesis
+from apps.synthesis.utils import get_synthesis_status
 
 
 class SynthesisSerializer(serializers.ModelSerializer):
     language = serializers.CharField(source='lang')
     status = serializers.SerializerMethodField()
+    short_text = serializers.SerializerMethodField()
+
+    def get_short_text(self, obj):
+        return obj.text[0:80]
 
     def get_status(self, obj):
-        if obj.status == -1:
-            return "waiting"
-        elif obj.status == 0:
-            return "preparing"
-        elif obj.status == 1:
-            return "processing"
-        elif obj.status == 2:
-            return "synthesizing"
-        elif obj.status == 3:
-            return "ready"
-        elif obj.status == 4:
-            return "failed"
-        else:
-            return "unknown"
+        return get_synthesis_status(status=obj.status)
 
     class Meta:
         model = Synthesis
         fields = [
             'id',
-            'filename',
-            'text',
-            '',
+            'file_name',
+            'short_text',
+            'voice_id',
+            'language',
+            'char_count',
             'status',
             'created_at',
-            '',
         ]
 
 
-class CreateSynthesisSerializer(serializers.ModelSerializer):
+class SynthesisDetailSerializer(serializers.ModelSerializer):
+    language = serializers.CharField(source='lang')
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return get_synthesis_status(status=obj.status)
+
     class Meta:
         model = Synthesis
-        fields = ['']
+        fields = [
+            'id',
+            'file_name',
+            'ftp_path',
+            'text',
+            'voice_id',
+            'language',
+            'char_count',
+            'status',
+            'created_at',
+            'price'
+        ]

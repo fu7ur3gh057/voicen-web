@@ -1,3 +1,12 @@
 from django.contrib import admin
 
-# Register your models here.
+from apps.synthesis.models import Synthesis
+
+
+class SynthesisAdmin(admin.ModelAdmin):
+    list_display = ['id', 'profile', 'char_count', 'lang', 'status', 'created_at']
+    list_filter = ['profile', 'lang', 'status']
+    list_display_links = ['id', 'profile', 'char_count', 'lang']
+
+
+admin.site.register(Synthesis, SynthesisAdmin)
