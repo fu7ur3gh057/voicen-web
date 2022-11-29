@@ -1,0 +1,15 @@
+export interface IProfile {
+    id: string,
+    username: string,
+    email: string,
+    first_name: string,
+    last_name: string,
+    phone_number: string,
+    profile_photo: string,
+    city?: string,
+    state?: string,
+    postal_code?: string,
+    api_token: string,
+    is_subscribed: boolean,
+    is_trial: boolean,
+}
