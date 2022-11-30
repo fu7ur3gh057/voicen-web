@@ -4,13 +4,10 @@ import jwt_decode from "jwt-decode";
 import {setCookie} from "react-use-cookie";
 import {SERVER_API, TOKEN_REFRESH_API} from "../constants/apiConstants";
 import {getParsedCookie} from "../utils/cookieUtils";
-import {IAccessTokenInfo, ITokens} from "../models/IUser";
-import {refreshTokens} from "../store/reducers/user/UserSlice";
-import {useAppDispatch} from "./useAppDispatch";
+import {IAccessTokenInfo, ITokens} from "../models/IAuth";
 
 
 const useAuthAxios = () => {
-    const dispatch = useAppDispatch();
     // getting user tokens
     const jwtTokens = getParsedCookie('tokens');
     const axiosInstance = axios.create({
@@ -37,7 +34,6 @@ const useAuthAxios = () => {
         const data = response.data as ITokens
         // const tokenInfo = jwt_decode(data.access)
         setCookie('tokens', JSON.stringify(data));
-        dispatch(refreshTokens(data))
         request.headers.Authorization = `Bearer ${response.data.access}`
         return request
     })
