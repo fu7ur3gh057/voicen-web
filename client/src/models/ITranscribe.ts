@@ -9,3 +9,17 @@ export interface ITranscribe {
     status: string,
     created_at: string,
 }
+
+
+export interface ITranscript {
+    word: string,
+    endTime: number,
+    startTime: number,
+    confidence: number,
+}
+
+export interface ITranscriptList {
+    status: {},
+    fulltext: string,
+    words: ITranscript[],
+}

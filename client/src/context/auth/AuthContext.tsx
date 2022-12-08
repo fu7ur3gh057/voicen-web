@@ -18,7 +18,6 @@ export interface IAuthContext {
 }
 
 const AuthContext = createContext<IAuthContext | null>(null);
-export default AuthContext;
 
 const getTokensCookie = (cookie: string) => {
     if (cookie !== '') return JSON.parse(cookie) as ITokens;
@@ -26,7 +25,8 @@ const getTokensCookie = (cookie: string) => {
 }
 
 const AuthContextProvider = ({children}: ChildrenProps) => {
-    const [tokensCookie, setTokensCookie] = useCookie('tokens', '');
+    const cookieName = 'tokens';
+    const [tokensCookie, setTokensCookie] = useCookie(cookieName, '');
     const [tokens, setTokens] = useState<ITokens | null>(getTokensCookie(tokensCookie));
     const [profile, setProfile] = useState<IProfile | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -89,4 +89,4 @@ const AuthContextProvider = ({children}: ChildrenProps) => {
     );
 };
 
-export {AuthContextProvider};
+export {AuthContext, AuthContextProvider};

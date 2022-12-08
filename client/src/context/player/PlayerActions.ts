@@ -1,7 +1,3 @@
-import {ITokens} from "../../models/IAuth";
-import {getParsedCookie} from "../../utils/cookieUtils";
-import React from "react";
-
 export enum PlayerActionType {
     SetAudioFile,
     SetProgressTime,

@@ -5,7 +5,7 @@ export type PlayerState = {
     isRepeating: boolean,
     progressTime: string,
     durationTime: string,
-    fileName: string,
+    fileUrl: string,
     fileImage: string,
 }
 
@@ -14,7 +14,7 @@ export const initialPlayerState: PlayerState = {
     isRepeating: false,
     progressTime: '',
     durationTime: '',
-    fileName: '',
+    fileUrl: '',
     fileImage: '',
 }
 
@@ -22,7 +22,7 @@ export const PlayerReducer = (state: PlayerState, action: PlayerAction): PlayerS
     const {type, payload} = action;
     switch (type) {
         case PlayerActionType.SetAudioFile:
-            return {...state, fileName: payload}
+            return {...state, fileUrl: payload}
         case PlayerActionType.SetProgressTime:
             return {...state, progressTime: payload};
         case PlayerActionType.SetDurationTime:

@@ -1,16 +1,16 @@
 import {createContext, useState} from "react";
-import {ChildrenProps} from "./index";
+import {ChildrenProps} from "../index";
 
-export interface IApplicationContext {
+export interface ILoadingContext {
     globalLoading: boolean,
     activateLoadingListener: () => void,
     deactivateLoadingListener: () => void,
 }
 
-const ApplicationContext = createContext<IApplicationContext | null>(null);
+const LoadingContext = createContext<ILoadingContext | null>(null);
 
 
-const ApplicationContextProvider = ({children}: ChildrenProps) => {
+const LoadingContextProvider = ({children}: ChildrenProps) => {
     const [globalLoading, setGlobalLoading] = useState(false);
 
     const activateLoading = () => {
@@ -24,13 +24,13 @@ const ApplicationContextProvider = ({children}: ChildrenProps) => {
         globalLoading: globalLoading,
         activateLoadingListener: activateLoading,
         deactivateLoadingListener: deactivateLoading
-    } as IApplicationContext
+    } as ILoadingContext
 
     return (
-        <ApplicationContext.Provider value={contextData}>
+        <LoadingContext.Provider value={contextData}>
             {children}
-        </ApplicationContext.Provider>
+        </LoadingContext.Provider>
     )
 }
 
-export {ApplicationContext, ApplicationContextProvider}
+export {LoadingContext, LoadingContextProvider}
