@@ -1,6 +1,8 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.shortcuts import get_object_or_404
 
+from apps.synthesis.models import Synthesis
 from storage.ftp import FTPStorage
 
 logger = get_task_logger(__name__)
@@ -23,8 +25,14 @@ logger = get_task_logger(__name__)
 # DELETE SYNTHESIS
 @shared_task(name='delete_synthesis')
 def delete_synthesis_task(data):
-    ftp_path = data['ftp_path']
-    # Delete file from FTP server
+    job_id_list = data['id_list']
     ftp_storage = FTPStorage()
-    ftp_storage.delete(name=ftp_path)
-    return 'Transcribe job was deleted successfuly'
+    for job_id in job_id_list:
+        synthesis = get_object_or_404(Synthesis, id=job_id)
+        if synthesis is not None:
+            ftp_path = synthesis.ftp_path
+            # Delete object from Database
+            synthesis.delete()
+            # Delete file from FTP server
+            ftp_storage.delete(name=ftp_path)
+    return 'Synthesis jobs was deleted successfuly'

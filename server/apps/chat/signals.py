@@ -16,7 +16,7 @@ User = get_user_model()
 def create_room(sender, instance, created, **kwargs):
     if created:
         if not instance.is_superuser:
-            admins = User.objects.all().filter(is_superuser=True)
+            admins = User.objects.all().filter(Q(is_superuser=True) & Q(is_staff=True))
             room = Room.objects.create(user=instance)
             room.save()
             for superuser in admins:

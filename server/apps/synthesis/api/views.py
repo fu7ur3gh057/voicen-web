@@ -1,6 +1,12 @@
+from os.path import splitext
+from urllib.parse import urlparse
+
 import django_filters
+import magic
 import textract
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser
@@ -12,10 +18,9 @@ from apps.synthesis.api.serializers import SynthesisSerializer, SynthesisDetailS
 from apps.synthesis.exceptions import SynthesisNotFound
 from apps.synthesis.models import Synthesis
 from apps.synthesis.pagination import SynthesisPagination
-from django_filters.rest_framework import DjangoFilterBackend
-
 from apps.synthesis.utils import remove_text_inside_brackets, get_synthesis_price, get_short_text, get_lang_for_textract
 from constants.voicen_constants import AVAILABLE_SYNTHESIS_LANGS, AVAILABLE_VOICE_IDS
+from storage.ftp import FTPStorage
 from apps.synthesis.tasks import delete_synthesis_task
 
 
@@ -43,7 +48,7 @@ class SynthesisListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        synthesis_list = self.queryset.filter(profile=user.profile).order_by('-created_by')
+        synthesis_list = self.queryset.filter(profile=user.profile).order_by('-created_at')
         return synthesis_list
 
 
@@ -59,6 +64,35 @@ class SynthesisDetailAPIView(APIView):
             raise SynthesisNotFound
         serializer = self.serializer_class(synthesis_job, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# GET SYNTHESIS FILE STREAM BYTES
+class SynthesisAudioAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request: Request, synthesis_id):
+        try:
+            # Get Synthesis Job
+            synthesis_job = Synthesis.objects.get(id=synthesis_id)
+            ftp_storage = FTPStorage()
+            # Get Correct FTP Path
+            ftp_path = urlparse(synthesis_job.ftp_path).path
+            # Get FTP File
+            ftp_file = ftp_storage._open(name=ftp_path, mode='rb')
+            # Get Mime Type
+            mime_type = magic.from_buffer(buffer=ftp_file.read(1024), mime=True)
+            ftp_file.seek(0)
+            response = HttpResponse()
+            response.write(content=ftp_file.read())
+            response['Content-Type'] = mime_type
+            response['Accept-Ranges'] = 'bytes'
+            response['Content-Disposition'] = f'attachment; filename={synthesis_job.file_name}{splitext(ftp_path)[1]}'
+            response['Content-Length'] = ftp_storage.file_size(ftp_path)
+            return response
+        except Synthesis.DoesNotExist:
+            raise SynthesisNotFound
+        except Exception as ex:
+            return Response(f'{ex}', status=status.HTTP_400_BAD_REQUEST)
 
 
 # UPLOAD SYNTHESIS BY FILE
@@ -155,16 +189,11 @@ class SynthesisFileAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# DELETE SYNTHESIS BY ID
+# DELETE SYNTHESIS BY ARRAY OF IDs
 @api_view(['DELETE'])
 @permission_classes([permissions.IsAuthenticated])
-def delete_synthesis_api_view(request: Request, synthesis_id):
-    synthesis = get_object_or_404(Synthesis, id=synthesis_id)
-    if synthesis is None:
-        err_msg = 'Job is not found'
-        return Response(err_msg, status=status.HTTP_404_NOT_FOUND)
-    # Celery Task
-    data = {'ftp_path': synthesis.ftp_path}
+def delete_synthesis_api_view(request: Request):
+    job_id_list = request.data['job_id_list']
+    data = {'id_list': job_id_list}
     delete_synthesis_task.delay(data)
-    synthesis.delete()
-    return Response('Transcribe job was deleted successfuly', status=status.HTTP_200_OK)
+    return Response('Transcribe jobs was deleted successfuly', status=status.HTTP_200_OK)

@@ -88,7 +88,7 @@ class FTPStorage(Storage):
     # MAKE DIRECTORY
     def _mkremdirs(self, path):
         pwd = self._connection.pwd()
-        self._connection.cwd('fuad')
+        # self._connection.cwd('fuad')
         path_splitted = path.split('/')
         for path_part in path_splitted:
             try:
@@ -108,6 +108,7 @@ class FTPStorage(Storage):
     def _put_file(self, name, content, is_file):
         DEFAULT_CHUNK_SIZE = 64 * 2 ** 10
         name = f'fuad/{name}'
+        g = self._connection.nlst()
         try:
             # for FileField
             if is_file:
@@ -115,16 +116,22 @@ class FTPStorage(Storage):
             # for Media Root File
             else:
                 file = content
-            self._mkremdirs(os.path.dirname(name))
-            pwd = self._connection.pwd()
-            f_s = os.path.dirname(name)
-            self._connection.cwd(os.path.dirname(name))
+            full_path_name = os.path.dirname(name)
+            self._mkremdirs(full_path_name)
+            path_splitted = full_path_name.split('/')
+            for path_part in path_splitted:
+                # g = self._connection.nlst()
+                self._connection.cwd(f'{path_part}')
+            # pwd = self._connection.pwd()
+            full_path_name = os.path.dirname(name)
+            # self._connection.cwd(full_path_name)
             self._connection.storbinary(f'STOR {os.path.basename(name)}', file, DEFAULT_CHUNK_SIZE)
-            self._connection.cwd(pwd)
+            self._connection.pwd()
         except ftplib.all_errors:
             raise FTPStorageException('Error writing file %s' % name)
 
     def _open(self, name, mode='rb'):
+        name = 'fuad/' + name
         remote_file = FTPStorageFile(name, self, mode=mode)
         return remote_file
 
@@ -158,6 +165,8 @@ class FTPStorage(Storage):
         self._put_file(name, content, is_file=is_file)
         content.close()
         return name
+
+    # def _create_folder_if_not_exists(self, name):
 
     def size(self, name):
         self._start_connection()

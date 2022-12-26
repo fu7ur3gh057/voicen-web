@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from apps.profiles.api.serializers import ProfileSerializer, UpdateProfileSerializer
 from apps.profiles.exceptions import ProfileNotFound, NotYourProfile
 from apps.profiles.models import Profile
-from apps.profiles.renderers import ProfileJSONRenderer
+# from apps.profiles.renderers import ProfileJSONRenderer
 
 # ALL METHODS ARE AUTHENTICATED
 
@@ -17,7 +17,7 @@ from apps.profiles.renderers import ProfileJSONRenderer
 # GET PROFILE
 class GetProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    renderer_classes = [ProfileJSONRenderer]
+    # renderer_classes = [ProfileJSONRenderer]
 
     def get(self, request: Request):
         user = self.request.user
@@ -29,7 +29,7 @@ class GetProfileAPIView(APIView):
 # UPDATE PROFILE
 class UpdateProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    renderer_classes = [ProfileJSONRenderer]
+    # renderer_classes = [ProfileJSONRenderer]
     serializer_class = UpdateProfileSerializer
 
     def put(self, request):

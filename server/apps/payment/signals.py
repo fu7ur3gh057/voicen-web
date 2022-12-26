@@ -3,12 +3,12 @@ import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from apps.payment.models import Operation, Transaction, Subscription, Wallet
+from apps.common.models import VoicenConfiguration
+from apps.payment.models import Operation, Transaction, Subscription, Wallet, SubscriptionChecker
 from apps.profiles.models import Profile
 from apps.synthesis.models import Synthesis
-from apps.synthesis.utils import remove_text_inside_brackets, get_synthesis_price
 from apps.transcribe.models import Transcribe
-from apps.transcribe.utils import get_transcribe_price
+from constants.interval_enums import TaskStatus, interval_schedule
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=Profile)
 def create_wallet(sender, instance, created, **kwargs):
     if created:
-        wallet = Wallet.objects.create(profile=instance)
+        config = VoicenConfiguration.objects.all().first()
+        wallet = Wallet.objects.create(profile=instance, credit=config.trial_credit)
         wallet.save()
 
 
@@ -33,8 +34,7 @@ def create_init_subscription(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Synthesis)
 def create_synthesis_operation(sender, instance, created, **kwargs):
     if created:
-        char_size = remove_text_inside_brackets(instance.text)
-        amount = get_synthesis_price(char_size=char_size)
+        amount = instance.price
         operation = Operation.objects.create(wallet=instance.profile.wallet, amount=amount, type=3)
         operation.save()
 
@@ -43,7 +43,6 @@ def create_synthesis_operation(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Transcribe)
 def create_transcribe_operation(sender, instance, created, **kwargs):
     if created:
-        duration = instance.duration
         amount = instance.price
         operation = Operation.objects.create(wallet=instance.profile.wallet, amount=amount, type=4)
         operation.save()
@@ -63,3 +62,24 @@ def create_subscription_operation(sender, instance, created, **kwargs):
     if created and instance.type != 4:
         operation = Operation.objects.create(wallet=instance.wallet, amount=15, type=2)
         operation.save()
+
+
+# CREATE SUBSCRIPTION CHECKER TASK
+@receiver(post_save, sender=SubscriptionChecker)
+def create_or_update_checker(sender, instance, created, **kwargs):
+    if created:
+        try:
+            count = SubscriptionChecker.objects.all().count()
+            if count <= 1:
+                instance.setup_task()
+        except Exception as ex:
+            print(ex)
+    else:
+        if instance.task is not None:
+            instance.task.enabled = instance.status == TaskStatus.active
+            instance.task.interval = interval_schedule(instance.time_interval)
+            instance.task.save()
+
+# @receiver(pre_delete, sender=SubscriptionChecker)
+# def pre_delete_checker(sender, instance, **kwargs):
+#     instance.task.delete()

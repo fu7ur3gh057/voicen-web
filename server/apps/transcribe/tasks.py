@@ -1,6 +1,9 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from pathlib import Path
+
+from django.shortcuts import get_object_or_404
+
 from apps.transcribe.models import Transcribe
 from apps.transcribe.utils import transcribe_ftp_path, clean_filename, delete_file, download_yt_video_as_mp3
 from storage.ftp import FTPStorage
@@ -56,8 +59,14 @@ def save_transcribe_youtube_task(data):
 # DELETE TRANSCRIBE
 @shared_task(name='delete_transcribe')
 def delete_transcribe_task(data):
-    ftp_path = data['ftp_path']
-    # Delete file from FTP server
+    job_id_list = data['id_list']
     ftp_storage = FTPStorage()
-    ftp_storage.delete(name=ftp_path)
-    return 'Transcribe job was deleted successfuly'
+    for job_id in job_id_list:
+        transcribe = get_object_or_404(Transcribe, id=job_id)
+        if transcribe is not None:
+            ftp_path = transcribe.ftp_path
+            # Delete object from Database
+            transcribe.delete()
+            # Delete file from FTP server
+            ftp_storage.delete(name=ftp_path)
+    return 'Transcribe jobs was deleted successfuly'

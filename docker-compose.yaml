@@ -1,29 +1,94 @@
-version: "3.7"
+version: "3.8"
 
 services:
+  # REDIS NoSQL
   redis:
-    image: redis
     restart: always
-  webapp:
-    restart: always
-    build:
-      context: ./webapp
+    image: redis:5
+    container_name: voicen_redis
     ports:
-      - "8888:8888"
-    command: [ "python3","./src/manage.py","runserver","0.0.0.0:8888" ]
-    volumes:
-      - .db:/app/src/db
-  worker:
+      - "6378:6379"
+    networks:
+      - db-net
+
+  # POSTGRES SQL
+  db:
     restart: always
-    build:
-      context: ./webapp 
+    image: postgres:13
+    container_name: voicen_postgres
     volumes:
-      - ./cats:/app/src/cats
-    command: ['celery','--workdir=./src','-A','proj','worker']
-  celery-beats:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: voicen_django
+    ports:
+      - "5431:5432"
+    networks:
+      - db-net
+
+  # DJANGO
+  server:
     restart: always
+    container_name: voicen_server
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - ./server/.env
     build:
-      context: ./webapp 
-    volumes:
-      - ./cats:/app/src/db
-    command: ['celery','--workdir=./src','-A','proj','beat', '-l', 'INFO', '--scheduler', 'django_celery_beat.schedulers:DatabaseScheduler']
+      context: ./server/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - db-net
+
+  # CELERY WORKER
+#  worker:
+#    restart: always
+#    build:
+#      context: ./server
+
+  # CELERY BEATS
+#  celery_beats:
+#    restart: always
+
+  # REACT
+  client:
+    restart: always
+    command: npm start
+    container_name: voicen_client
+    build:
+      context: ./client/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    depends_on:
+      - server
+    networks:
+      - db-net
+
+networks:
+  db-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+#  worker:
+#    restart: always
+#    build:
+#      context: ./webapp 
+#    volumes:
+#      - ./cats:/app/src/cats
+#    command: ['celery','--workdir=./src','-A','proj','worker']
+#  celery-beats:
+#    restart: always
+#    build:
+#      context: ./webapp 
+#    volumes:
+#      - ./cats:/app/src/db
+#    command: ['celery','--workdir=./src','-A','proj','beat', '-l', 'INFO', '--scheduler', 'django_celery_beat.schedulers:DatabaseScheduler']

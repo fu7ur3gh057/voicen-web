@@ -11,7 +11,7 @@ from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.users.api.serializers import RegisterSerializer, EmailVerificationSerializer, MyTokenObtainPairSerializer, \
-    UpdatePasswordSerializer
+    UpdatePasswordSerializer, DeleteUserSerializer
 from apps.users.models import User
 from apps.users.tasks import activate_user
 from rest_framework.decorators import api_view, permission_classes
@@ -90,7 +90,7 @@ class LogoutAPIView(views.APIView):
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response('successful logout', status=status.HTTP_205_RESET_CONTENT)
+            return Response('successful logout', status=status.HTTP_200_OK)
         except Exception as ex:
             return Response(f'{ex}', status=status.HTTP_400_BAD_REQUEST)
 
@@ -107,8 +107,19 @@ class SetNewPasswordAPIView(views.APIView):
         pass
 
 
-# DELETE USER TODO
-@api_view(['DELETE'])
-@permission_classes([permissions.IsAuthenticated])
-def delete_user(request: Request):
-    pass
+# DELETE USER  {password}
+class DeleteUserAPIView(generics.GenericAPIView):
+    serializer_class = DeleteUserSerializer
+
+    def delete(self, request):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = request.user
+            if hasattr(user, 'auth_token'):
+                user.auth_token.delete()
+            user.delete()
+            return Response('deleted', status=status.HTTP_200_OK)
+        except Exception as ex:
+            print(ex)
+            return Response('error', status=status.HTTP_400_BAD_REQUEST)

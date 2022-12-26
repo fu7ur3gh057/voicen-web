@@ -21,7 +21,7 @@ class TaskStatus(Enum):
     disabled = 'Disabled'
 
 
-def interval_schedule(self, time_interval):
+def interval_schedule(time_interval):
     if time_interval == TimeInterval.five_sec:
         return IntervalSchedule.objects.get(every=5, period='seconds')
     if time_interval == TimeInterval.half_min:
@@ -41,7 +41,7 @@ def interval_schedule(self, time_interval):
     if time_interval == TimeInterval.half_day:
         return IntervalSchedule.objects.get(every=12, period='hours')
     if time_interval == TimeInterval.one_day:
-        return IntervalSchedule.objects.get(every=1, period='day')
+        return IntervalSchedule.objects.get(every=1, period='days')
     if time_interval == TimeInterval.fifteen_day:
-        return IntervalSchedule.objects.get(every=15, period='day')
+        return IntervalSchedule.objects.get(every=15, period='days')
     raise NotImplementedError

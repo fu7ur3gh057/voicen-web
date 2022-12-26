@@ -3,10 +3,11 @@ from . import views
 
 urlpatterns = [
     path("wallet/", views.GetWalletAPIView.as_view(), name="get_wallet"),
-    path("make-transaction/", views.MakeTransactionAPIView.as_view(), name="make_transaction"),
-    path("transactions/", views.TransactionListAPIView.as_view(), name="transactions"),
-    path("subscriptions/", views.SubscriptionListAPIView.as_view(), name="subscriptions"),
-    path("subscribe/", views.SubscribeAPIView.as_view(), name="subscribe"),
-    path("unsubscribe/", views.unsubscribe, name="subscribe"),
-    path("operations/", views.OperationListAPIView.as_view(), name="operations")
+    path("transaction/", views.TransactionListAPIView.as_view(), name="transactions"),
+    path("transaction/create/", views.MakeTransactionAPIView.as_view(), name="create_transaction"),
+    path("transaction/receive/", views.ReceiveTransactionAPIView.as_view(), name="receive_transaction"),
+    path("subscription/", views.SubscriptionListAPIView.as_view(), name="subscriptions"),
+    path("subscription/create/", views.SubscribeAPIView.as_view(), name="subscribe"),
+    path("subscription/cancel/", views.unsubscribe, name="subscribe"),
+    path("operation/", views.OperationListAPIView.as_view(), name="operations")
 ]

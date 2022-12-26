@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 import youtube_dl
 
+from apps.common.models import VoicenConfiguration
 from server import settings
 
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
@@ -56,8 +57,8 @@ def get_filename(text):
 
 # GET TRANSCRIBE PRICE
 def get_transcribe_price(duration: float):
-    stt_price = 0.06
-    price = round((Decimal((duration) * stt_price / 60)), 5)
+    transcribe_price = float(VoicenConfiguration.objects.all().first().synthesis_price)
+    price = round((Decimal((duration) * transcribe_price / 60)), 5)
     return price
 
 

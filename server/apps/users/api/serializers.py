@@ -75,6 +75,20 @@ class UpdatePasswordSerializer(serializers.ModelSerializer):
         return user
 
 
+class DeleteUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=68, min_length=6, required=True)
+
+    class Meta:
+        model = User
+        fields = ['password']
+
+    def validate_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError(_('Your password was entered incorrectly.'))
+        return value
+
+
 class ResetPasswordSerializer(serializers.ModelSerializer):
     pass
 
@@ -84,11 +98,6 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    gender = serializers.CharField(source="profile.gender")
-    phone_number = PhoneNumberField(source="profile.phone_number")
-    profile_photo = serializers.ImageField(source="profile.profile_photo")
-    country = CountryField(source="profile.country")
-    city = CountryField(source="profile.city")
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField(source='get_full_name')
@@ -102,11 +111,8 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'full_name',
-            'gender',
-            'phone_number',
-            'country',
-            'city',
-            'top_seller'
+            'is_verified',
+            'is_active',
         ]
 
         def get_first_name(self, obj):

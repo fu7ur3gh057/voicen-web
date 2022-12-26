@@ -18,9 +18,9 @@ class Transcribe(TimeStampedUUIDModel):
     profile = models.ForeignKey(Profile, related_name="transcribe_jobs", on_delete=models.CASCADE)
     lang = models.CharField(verbose_name=_("Language"), max_length=3, blank=False, choices=LANGUAGE_CHOICES)
     ftp_path = models.CharField(verbose_name=_("FTP Path"), max_length=256, null=True)
-    youtube_url = models.CharField(verbose_name=_("Youtube Url"), max_length=256, null=True)
-    file = models.FileField(max_length=300, upload_to=transcribe_file_path, null=True,
-                            validators=[FileExtensionValidator(allowed_extensions=allowed_extensions)])
+    youtube_url = models.CharField(verbose_name=_("Youtube Url"), max_length=256, null=True,blank=True)
+    # file = models.FileField(max_length=300, upload_to=transcribe_file_path, null=True,
+    #                         validators=[FileExtensionValidator(allowed_extensions=allowed_extensions)])
     file_name = models.CharField(verbose_name=_("File Name"), max_length=256, null=True)
     duration = models.DecimalField(verbose_name=_("Duration in seconds"), max_digits=6, decimal_places=3, default=0.00)
     price = models.DecimalField(max_digits=6, decimal_places=3, default=1.00)

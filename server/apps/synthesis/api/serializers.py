@@ -7,7 +7,6 @@ from apps.synthesis.utils import get_synthesis_status
 
 
 class SynthesisSerializer(serializers.ModelSerializer):
-    language = serializers.CharField(source='lang')
     status = serializers.SerializerMethodField()
     short_text = serializers.SerializerMethodField()
 
@@ -24,7 +23,7 @@ class SynthesisSerializer(serializers.ModelSerializer):
             'file_name',
             'short_text',
             'voice_id',
-            'language',
+            'lang',
             'char_count',
             'status',
             'created_at',
